@@ -28,4 +28,19 @@ describe("TBS Text access", () => {
     }));
     await expect(caller.text.create({ title: "", content: "# Inhalt" })).rejects.toMatchObject({ code: "BAD_REQUEST" });
   });
+
+  it("rejects invalid delete ids before persistence", async () => {
+    const caller = appRouter.createCaller(baseContext({
+      id: 1,
+      openId: "text-delete-test-user",
+      name: "Text Delete Test",
+      email: "delete@example.com",
+      loginMethod: "manus",
+      role: "user",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      lastSignedIn: new Date(),
+    }));
+    await expect(caller.text.delete({ id: 0 })).rejects.toMatchObject({ code: "BAD_REQUEST" });
+  });
 });
