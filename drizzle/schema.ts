@@ -11,7 +11,6 @@ export const users = mysqlTable("users", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
-
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
@@ -29,11 +28,9 @@ export const apps = mysqlTable("apps", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
-
 export type AppLink = typeof apps.$inferSelect;
 export type InsertApp = typeof apps.$inferInsert;
 
-/** Messages stay inside the TBS network. No external delivery fields or SMTP route exist. */
 export const mailMessages = mysqlTable("mailMessages", {
   id: int("id").autoincrement().primaryKey(),
   senderId: int("senderId").notNull(),
@@ -48,6 +45,16 @@ export const mailMessages = mysqlTable("mailMessages", {
   readAt: timestamp("readAt"),
   isStarred: int("isStarred").default(0).notNull(),
 });
-
 export type MailMessage = typeof mailMessages.$inferSelect;
 export type InsertMailMessage = typeof mailMessages.$inferInsert;
+
+export const textDocuments = mysqlTable("textDocuments", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  title: varchar("title", { length: 240 }).notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type TextDocument = typeof textDocuments.$inferSelect;
+export type InsertTextDocument = typeof textDocuments.$inferInsert;
