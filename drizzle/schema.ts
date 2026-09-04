@@ -1,8 +1,11 @@
 import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
-export const users = mysqlTable("users", { id: int("id").autoincrement().primaryKey(), openId: varchar("openId", { length: 64 }).notNull().unique(), name: text("name"), email: varchar("email", { length: 320 }), tbsAddress: varchar("tbsAddress", { length: 160 }).unique(), loginMethod: varchar("loginMethod", { length: 64 }), role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(), createdAt: timestamp("createdAt").defaultNow().notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(), lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull() });
+export const users = mysqlTable("users", { id: int("id").autoincrement().primaryKey(), openId: varchar("openId", { length: 64 }).notNull().unique(), name: text("name"), email: varchar("email", { length: 320 }), tbsAddress: varchar("tbsAddress", { length: 160 }).unique(), passwordHash: varchar("passwordHash", { length: 255 }), loginMethod: varchar("loginMethod", { length: 64 }), role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(), createdAt: timestamp("createdAt").defaultNow().notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(), lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull() });
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
+
+export const authSessions = mysqlTable("authSessions", { id: int("id").autoincrement().primaryKey(), userId: int("userId").notNull(), tokenHash: varchar("tokenHash", { length: 64 }).notNull().unique(), expiresAt: timestamp("expiresAt").notNull(), createdAt: timestamp("createdAt").defaultNow().notNull() });
+export type AuthSession = typeof authSessions.$inferSelect;
 
 export const apps = mysqlTable("apps", { id: int("id").autoincrement().primaryKey(), name: varchar("name", { length: 120 }).notNull(), description: text("description"), url: varchar("url", { length: 2048 }).notNull(), category: varchar("category", { length: 40 }).default("custom").notNull(), icon: varchar("icon", { length: 40 }).default("grid").notNull(), accent: varchar("accent", { length: 24 }).default("teal").notNull(), sortOrder: int("sortOrder").default(0).notNull(), isActive: int("isActive").default(1).notNull(), createdBy: int("createdBy"), createdAt: timestamp("createdAt").defaultNow().notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull() });
 export type AppLink = typeof apps.$inferSelect;
