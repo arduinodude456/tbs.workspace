@@ -28,4 +28,19 @@ describe("TBS settings access", () => {
     }));
     await expect(caller.settings.updateProfile({ name: "Settings Test", email: "not-an-email" })).rejects.toMatchObject({ code: "BAD_REQUEST" });
   });
+
+  it("rejects TBS addresses outside the supported local format", async () => {
+    const caller = appRouter.createCaller(context({
+      id: 10,
+      openId: "settings-address-test-user",
+      name: "Settings Address Test",
+      email: "address@example.com",
+      loginMethod: "manus",
+      role: "user",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      lastSignedIn: new Date(),
+    }));
+    await expect(caller.settings.updateProfile({ name: "Settings Address Test", email: "address@example.com", tbsAddress: "outside@example.com" })).rejects.toMatchObject({ code: "BAD_REQUEST" });
+  });
 });
