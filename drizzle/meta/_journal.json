@@ -15,6 +15,13 @@
       "when": 1788524797420,
       "tag": "0001_melted_nightcrawler",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1788525502674,
+      "tag": "0002_windy_leo",
+      "breakpoints": true
     }
   ]
 }

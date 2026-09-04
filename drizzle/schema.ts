@@ -1,10 +1,5 @@
 import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
-/**
- * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
- */
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
   openId: varchar("openId", { length: 64 }).notNull().unique(),
@@ -20,10 +15,6 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-/**
- * App links shown in the private TBS launchpad.
- * URLs are kept as references; authentication remains with the linked service.
- */
 export const apps = mysqlTable("apps", {
   id: int("id").autoincrement().primaryKey(),
   name: varchar("name", { length: 120 }).notNull(),
@@ -41,3 +32,22 @@ export const apps = mysqlTable("apps", {
 
 export type AppLink = typeof apps.$inferSelect;
 export type InsertApp = typeof apps.$inferInsert;
+
+/** Messages stay inside the TBS network. No external delivery fields or SMTP route exist. */
+export const mailMessages = mysqlTable("mailMessages", {
+  id: int("id").autoincrement().primaryKey(),
+  senderId: int("senderId").notNull(),
+  recipientId: int("recipientId").notNull(),
+  senderName: varchar("senderName", { length: 160 }).notNull(),
+  senderEmail: varchar("senderEmail", { length: 320 }).notNull(),
+  recipientName: varchar("recipientName", { length: 160 }).notNull(),
+  recipientEmail: varchar("recipientEmail", { length: 320 }).notNull(),
+  subject: varchar("subject", { length: 240 }).notNull(),
+  body: text("body").notNull(),
+  sentAt: timestamp("sentAt").defaultNow().notNull(),
+  readAt: timestamp("readAt"),
+  isStarred: int("isStarred").default(0).notNull(),
+});
+
+export type MailMessage = typeof mailMessages.$inferSelect;
+export type InsertMailMessage = typeof mailMessages.$inferInsert;
