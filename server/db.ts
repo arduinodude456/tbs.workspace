@@ -1,7 +1,7 @@
 import { and, asc, desc, eq, or } from "drizzle-orm";
 import crypto from "node:crypto";
 import { drizzle } from "drizzle-orm/mysql2";
-import { apps, InsertApp, users, InsertUser, mailMessages, InsertMailMessage, User, textDocuments, InsertTextDocument, photoAlbums, InsertPhotoAlbum, photos, InsertPhoto, authSessions } from "../drizzle/schema";
+import { apps, InsertApp, users, InsertUser, mailMessages, InsertMailMessage, User, textDocuments, InsertTextDocument, photoAlbums, InsertPhotoAlbum, photos, InsertPhoto, authSessions, klaroSyncItems } from "../drizzle/schema";
 import { createSessionToken, hashPassword, hashSessionToken, verifyPassword } from "./auth";
 import { ENV } from "./_core/env";
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -37,3 +37,7 @@ export async function createPhotoAlbum(ownerId: number, input: Pick<InsertPhotoA
 export async function getPhotos(ownerId: number, albumId?: number | null) { const db = await getDb(); if (!db) return []; const where = albumId ? and(eq(photos.ownerId, ownerId), eq(photos.albumId, albumId)) : eq(photos.ownerId, ownerId); return db.select().from(photos).where(where).orderBy(desc(photos.createdAt)); }
 export async function createPhoto(photo: InsertPhoto) { const db = await getDb(); if (!db) throw new Error("Database is not available"); await db.insert(photos).values(photo); }
 export async function deletePhoto(ownerId: number, id: number) { const db = await getDb(); if (!db) throw new Error("Database is not available"); await db.delete(photos).where(and(eq(photos.id, id), eq(photos.ownerId, ownerId))); }
+
+
+export async function getKlaroSyncItems(ownerId: number) { const db = await getDb(); if (!db) return []; return db.select().from(klaroSyncItems).where(eq(klaroSyncItems.ownerId, ownerId)).orderBy(desc(klaroSyncItems.createdAt)); }
+export async function createKlaroSyncItem(ownerId: number, input: { sourceType: "mail" | "text" | "photo"; sourceId: number; title: string; summary: string; sourceUrl?: string | null }) { const db = await getDb(); if (!db) throw new Error("Database is not available"); const existing = await db.select({ id: klaroSyncItems.id }).from(klaroSyncItems).where(and(eq(klaroSyncItems.ownerId, ownerId), eq(klaroSyncItems.sourceType, input.sourceType), eq(klaroSyncItems.sourceId, input.sourceId))).limit(1); if (existing[0]) return existing[0].id; const result = await db.insert(klaroSyncItems).values({ ownerId, ...input }); return Number(result[0].insertId); }

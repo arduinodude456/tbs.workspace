@@ -27,3 +27,9 @@ export type InsertPhotoAlbum = typeof photoAlbums.$inferInsert;
 export const photos = mysqlTable("photos", { id: int("id").autoincrement().primaryKey(), ownerId: int("ownerId").notNull(), albumId: int("albumId"), fileName: varchar("fileName", { length: 240 }).notNull(), storageKey: varchar("storageKey", { length: 512 }).notNull(), url: varchar("url", { length: 1024 }).notNull(), mimeType: varchar("mimeType", { length: 80 }).notNull(), byteSize: int("byteSize").notNull(), createdAt: timestamp("createdAt").defaultNow().notNull() });
 export type Photo = typeof photos.$inferSelect;
 export type InsertPhoto = typeof photos.$inferInsert;
+
+
+/** Items explicitly shared from TBS into the Klaro workspace. Source data stays in TBS. */
+export const klaroSyncItems = mysqlTable("klaroSyncItems", { id: int("id").autoincrement().primaryKey(), ownerId: int("ownerId").notNull(), sourceType: mysqlEnum("sourceType", ["mail", "text", "photo"]).notNull(), sourceId: int("sourceId").notNull(), title: varchar("title", { length: 240 }).notNull(), summary: text("summary").notNull(), sourceUrl: varchar("sourceUrl", { length: 1024 }), createdAt: timestamp("createdAt").defaultNow().notNull() });
+export type KlaroSyncItem = typeof klaroSyncItems.$inferSelect;
+export type InsertKlaroSyncItem = typeof klaroSyncItems.$inferInsert;
